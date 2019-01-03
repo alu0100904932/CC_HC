@@ -1,5 +1,12 @@
 import java.util.ArrayList;
 
+/**
+ * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
+ * Complejidad Computacional - Circuito Hamiltoniano <p>
+ * CircuitoHam.java - Clase para la construccion del circuito hamiltoniano
+ * @author JRJ
+ */
+
 public class CircuitoHam {
 	
 	ArrayList<Gadget> gadgets;

@@ -13,7 +13,8 @@ public class Arista {
 	 * Constructor de una arista
 	 */
 	public Arista () {
-		
+		this.nodoA = new Nodo();
+		this.nodoB = new Nodo();
 	}
 	
 	/**

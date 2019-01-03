@@ -13,17 +13,28 @@ public class Grafo {
 	private ArrayList<Arista> aristas; // Array que contiene las aristas del grafo
 	
 	/**
-	 * Constructor del grafo
+	 * Constructor por defecto del grafo
 	 */
 	public Grafo () {
-		
+		this.id = null;
+		this.nodos = new ArrayList<Nodo>();
+		this.aristas = new ArrayList<Arista>();
+	}
+	
+	/**
+	 * Constructor del grafo indicandole su id
+	 */
+	public Grafo (String id) {
+		this.id = id;
+		this.nodos = new ArrayList<Nodo>();
+		this.aristas = new ArrayList<Arista>();
 	}
 	
 	/**
 	 * Metodo para agregar un nodo al grafo
 	 * @param nodo Nodo que se deseea agregar
 	 */
-	public void AddNodo (Nodo nodo) {
+	public void addNodo (Nodo nodo) {
 		nodos.add(nodo);
 	}
 	
@@ -31,7 +42,7 @@ public class Grafo {
 	 * Metodo para agregar una arista al grafo
 	 * @param arista Arista que se deseea agregar
 	 */
-	public void AddArista (Arista arista) {
+	public void addArista (Arista arista) {
 		aristas.add(arista);
 	}
 
