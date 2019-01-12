@@ -2,7 +2,7 @@
  * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
  * Complejidad Computacional - Circuito Hamiltoniano <p>
  * Arista.java - Clase para representar una arista de un grafo, conecta un nodo A con otro nodo B
- * @author JRJ
+ * @author Grupo 2 - Juan, Richard, Jesus
  */
 public class Arista {
 	
@@ -23,7 +23,7 @@ public class Arista {
 	 * @return True en caso de que la arista conecte el nodo buscado
 	 */
 	public boolean contieneNodo (String id) {
-		return (this.getNodoA().getId() == id || this.getNodoB().getId() == id);
+		return (this.getNodoA().getId().equals(id) || this.getNodoB().getId().equals(id));
 	}
 	
 	/**

@@ -4,13 +4,13 @@ import java.util.ArrayList;
  * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
  * Complejidad Computacional - Circuito Hamiltoniano <p>
  * Grafo.java - Clase para representar un grafo
- * @author JRJ
+ * @author Grupo 2 - Juan, Richard, Jesus
  */
 public class Grafo {
 	
-	private String id; // Identificador del grado
-	private ArrayList<Nodo> nodos; // Array que contiene los nodos del grafo
-	private ArrayList<Arista> aristas; // Array que contiene las aristas del grafo
+	protected String id; // Identificador del grado
+	protected ArrayList<Nodo> nodos; // Array que contiene los nodos del grafo
+	protected ArrayList<Arista> aristas; // Array que contiene las aristas del grafo
 	
 	/**
 	 * Constructor por defecto del grafo

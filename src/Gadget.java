@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
  * Complejidad Computacional - Circuito Hamiltoniano <p>
  * Gadget.java - Clase para representar los subgrafos del circuito hamiltoniano, hereda de Grafo
- * @author JRJ
+ * @author Grupo 2 - Juan, Richard, Jesus
  */
 
 public class Gadget extends Grafo {
@@ -20,6 +20,8 @@ public class Gadget extends Grafo {
 	 */
 	public Gadget (String nombre) {
 		super(nombre);
+		this.extLibres = new ArrayList<Integer>();
+		this.extOcupados = new ArrayList<Integer>();
 		this.generarNodos(nombre);
 		this.extLibres.add(0);
 		this.extLibres.add(5);

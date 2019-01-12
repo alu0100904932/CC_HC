@@ -2,7 +2,7 @@
  * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
  * Complejidad Computacional - Circuito Hamiltoniano <p>
  * Main.java - Fichero principal
- * @author JRJ
+ * @author Grupo 2 - Juan, Richard, Jesus
  */
 
 public class Main {
@@ -12,5 +12,4 @@ public class Main {
 		algoritmo.cargarCircuito();
 	    algoritmo.resolverCircuito();
 	}
-
 }

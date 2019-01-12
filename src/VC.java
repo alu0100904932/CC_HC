@@ -18,7 +18,9 @@ public class VC extends Grafo {
 	 * Contructor por defecto
 	 */
 	public VC (){
+		super();
 		this.id = "VC";
+		this.cubrimiento = new ArrayList<Nodo>();
 	}
 
 	/**
@@ -48,15 +50,15 @@ public class VC extends Grafo {
 			String [] indiceNodosCubrimiento = line.split(" ");
 			for (int i = 0; i < indiceNodosCubrimiento.length; i++)
 			{
-				int indice = Integer.parseInt(indiceNodosCubrimiento[i]);
+				int indice = Integer.parseInt(indiceNodosCubrimiento[i]) - 1;
 				this.addNodoCubri(this.getNodos().get(indice));
 			}
 
 			while ((line = vc.readLine()) != null)
 			{
 				String [] indicesNodos = line.split(" ");
-				int indiceNodoA = Integer.parseInt(indicesNodos[0]);
-				int indiceNodoB = Integer.parseInt(indicesNodos[1]);
+				int indiceNodoA = Integer.parseInt(indicesNodos[0]) - 1;
+				int indiceNodoB = Integer.parseInt(indicesNodos[1]) - 1;
 				Nodo a = this.getNodos().get(indiceNodoA);
 				Nodo b = this.getNodos().get(indiceNodoB);
 				
@@ -105,7 +107,7 @@ public class VC extends Grafo {
 	public boolean enCubrimiento (Nodo valor){
 		for (int i = 0; i < this.getCubrimiento().size(); i++)
 		{
-			if (this.getCubrimiento().get(i).getId() == valor.getId())
+			if (this.getCubrimiento().get(i).getId().equals(valor.getId()))
 			{
 				return true;
 			}
