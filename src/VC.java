@@ -5,110 +5,146 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Universidad de La Laguna - Grado en Ingeniería Informática
- * Complejidad Computacional - Circuito Hamiltoniano
- * VC.java - Clase para representar ua entrada del vertex cover
- * JMHM
+ * Universidad de La Laguna - Grado de Ingenieria Informatica <p>
+ * Complejidad Computacional - Circuito Hamiltoniano <p>
+ * VC.java - Clase para representar una entrada del vertex cover
+ * @author Grupo 2 - Juan, Richard, Jesus
 */
-
 public class VC extends Grafo {
 
 	private ArrayList<Nodo> cubrimiento;
 
+	/**
+	 * Contructor por defecto
+	 */
 	public VC (){
-		ident = "VC";
+		this.id = "VC";
 	}
 
+	/**
+	 * Constructor copia
+	 * @param orig Vertex Cover original
+	 */
 	public VC (VC orig){
-		ident = orig.getIdent();
-		nodos = orig.getNodos();
-		aristas = orig.getAristas();
+		this.id = orig.getId();
+		this.nodos = orig.getNodos();
+		this.aristas = orig.getAristas();
 	}
 
-	public cargarVC (string nomFichero){
-		char cover[] = new char[256];
-		String entrada;
+	/**
+	 * Metodo para cargar un vertex cover desde un fichero de texto
+	 * @param nomFichero Nombre del fichero
+	 */
+	public void cargarVC (String nomFichero)
+	{
 		String line;
 		try {
-			BufferedReader bvc = new BufferedReader(new FileReader(nomFichero));
+			BufferedReader vc = new BufferedReader(new FileReader(nomFichero));
 			line = vc.readLine();
-            		entrada = line;
-			int numNodos = entrada.substring(0,1);
-			generarNodos(numNodos);
+			int numNodos = Integer.parseInt(line);
+			this.generarNodos(numNodos);
       		
 			line = vc.readLine();
-			entrada = line;
-			for (int i = 0; i < entrada.length()-1;++){
-				int indice = entrada.charAt(i) - '1';
-				addNodoCubri(getNodos()[indice]);
-				i++;
+			String [] indiceNodosCubrimiento = line.split(" ");
+			for (int i = 0; i < indiceNodosCubrimiento.length; i++)
+			{
+				int indice = Integer.parseInt(indiceNodosCubrimiento[i]);
+				this.addNodoCubri(this.getNodos().get(indice));
 			}
 
-		while ((line = bufferreader.readLine()) != null) {
-            		entrada = line;
-			Nodo a = getNodos()[entrada.charAt(0) - '1'];
-			Nodo b = getNodos()[entrada.charAt(2) - '1'];
-			Arista aux;
-			aux.setNodoA(a);
-			aux.setNodoB(b);
-			addArista(aux); 
-        	}
-
-    		} catch (FileNotFoundException ex) {
-        		ex.printStackTrace();
-    		} catch (IOException ex) {
-        		ex.printStackTrace();
-    		}
-
-
+			while ((line = vc.readLine()) != null)
+			{
+				String [] indicesNodos = line.split(" ");
+				int indiceNodoA = Integer.parseInt(indicesNodos[0]);
+				int indiceNodoB = Integer.parseInt(indicesNodos[1]);
+				Nodo a = this.getNodos().get(indiceNodoA);
+				Nodo b = this.getNodos().get(indiceNodoB);
+				
+				Arista aux = new Arista();
+				aux.setNodoA(a);
+				aux.setNodoB(b);
+				this.addArista(aux); 
+	        }
+			vc.close();
+		} catch (FileNotFoundException ex) {
+        	ex.printStackTrace();
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+    	}
 	}
 
-	public generarNodos(int numNodos){
-		for (int i = 0; i < numNodos; i++){
-			Nodo aux;
-			String nomNodo = "vc" + toString(i+1);
-			aux.setId(nomNodo);
-			addNodo(aux);
+	/**
+	 * Metodo para generar los nodos del vertex cover
+	 * @param numNodos
+	 */
+	public void generarNodos(int numNodos)
+	{
+		for (int i = 0; i < numNodos; i++)
+		{
+			Nodo aux = new Nodo();
+			String idNodo = "vc" + (i + 1);
+			aux.setId(idNodo);
+			this.addNodo(aux);
 		}
 	}
 
-	public addNodCubri (Nodo valor){
-		cubrimiento.push_back(valor);
-	}
 	/**
-         * Método Comprueba si un nodo es parte del cubrimiento o no
-	 * Parámetros El nodo
-         * @return True or false
-         */
-	public enCubrimiento (Nodo valor){
-		for (int i = 0; i < getcubrimient().length(); i++){
-			if (getcubrimiento()[i].getId() == valor.getId()){
-				return  true;
+	 * Metodo para a�adir un nodo de cubrimiento
+	 * @param valor
+	 */
+	public void addNodoCubri (Nodo valor)
+	{
+		this.cubrimiento.add(valor);
+	}
+	
+	/**
+	 * Metodo para comprobar si un nodo es parte del cubrimiento
+	 * @param valor Nodo a comprobar
+	 * @return true en caso de que si sea parte del cubrimiento
+	 */
+	public boolean enCubrimiento (Nodo valor){
+		for (int i = 0; i < this.getCubrimiento().size(); i++)
+		{
+			if (this.getCubrimiento().get(i).getId() == valor.getId())
+			{
+				return true;
 			}
 		}
 		return false;	
 	}
 
-	public imprimir(){
+	/**
+	 * Metodo para mostrar un vertex cover como String
+	 */
+	public String toString()
+	{
 		String salida = "";
-		salida = salida + "Número de nodos: " + toString(getNodos().length()) + "\nCubrimiento: ";
-		for (int i = 0; i < getCubrimiento().length();i++{
-			salida = salida + getCubrimiento()[i].getId() + " ":
+		salida += "Numero de nodos: " + this.getNodos().size() + "\nCubrimiento: ";
+		for (int i = 0; i < this.getCubrimiento().size(); i++)
+		{
+			salida += this.getCubrimiento().get(i).getId() + " ";
 		}
-		salida = salida + "\nAristas_\n";
-		for(int i = 0; i < getAristas().length(); i++){
-			salida = salida + getAristas()[i].imprimir() + "\n";
+		salida += "\nAristas:\n";
+		for(int i = 0; i < this.getAristas().size(); i++)
+		{
+			salida += this.getAristas().get(i) + "\n"; 
 		}
 		return salida;
 	}
 
-	/** Funciones de acceso **/
-
-	public setCubrimiento(ArrayList<Nodo> valor){
-		cubrimiento = valor;
+	/**
+	 * Setter para el array de los nodos de cubrimiento
+	 * @param valor Array de los nodos de cubrimiento
+	 */
+	public void setCubrimiento(ArrayList<Nodo> valor){
+		this.cubrimiento = valor;
 	}
 
-	ArrayList<Nodo> getCubrimiento(){
+	/**
+	 * Getter del conjunto de nodos de cubrimiento
+	 * @return Array con los nodos de cubrimiento
+	 */
+	public ArrayList<Nodo> getCubrimiento(){
 		return cubrimiento;
 	}
 }
