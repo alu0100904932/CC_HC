@@ -18,12 +18,26 @@ public class Arista {
 	}
 	
 	/**
+	 * Constructor copia
+	 * @param original Arista original
+	 */
+	public Arista (Arista original) {
+		this.nodoA = original.getNodoA();
+		this.nodoB = original.getNodoB();
+	}
+	
+	/**
 	 * Metodo para comprobar si una arista conecta un nodo con un id determinado
 	 * @param id Id del nodo que se busca
 	 * @return True en caso de que la arista conecte el nodo buscado
 	 */
-	public boolean contieneNodo (String id) {
-		return (this.getNodoA().getId().equals(id) || this.getNodoB().getId().equals(id));
+	public boolean contieneNodo (String valor) {
+		if ((this.getNodoA().getId().equals(valor)) || (this.getNodoB().getId().equals(valor))) {
+			return true;
+		}
+		else
+			return false;
+			
 	}
 	
 	/**

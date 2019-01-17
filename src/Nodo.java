@@ -21,6 +21,21 @@ public class Nodo {
 	public Nodo (String id) {
 		this.id = id;
 	}
+	
+	/**
+	 * Constructor copia
+	 * @param original Nodo original
+	 */
+	public Nodo (Nodo original) {
+		this.id = original.getId();
+	}
+	
+	/**
+	 * Metodo para mostrar un Nodo como String
+	 */
+	public String toString () {
+		return this.getId();
+	}
 
 	/**
 	 * Getter id del nodo

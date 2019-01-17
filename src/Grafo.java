@@ -31,6 +31,16 @@ public class Grafo {
 	}
 	
 	/**
+	 * Constructor copia
+	 * @param original Grafo original
+	 */
+	public Grafo (Grafo original) {
+		this.id = original.getId();
+		this.nodos = original.getNodos();
+		this.aristas = original.getAristas();
+	}
+	
+	/**
 	 * Metodo para agregar un nodo al grafo
 	 * @param nodo Nodo que se deseea agregar
 	 */
@@ -44,6 +54,21 @@ public class Grafo {
 	 */
 	public void addArista (Arista arista) {
 		aristas.add(arista);
+	}
+	
+	/**
+	 * Metodo toString de la clase Grafo
+	 */
+	public String toString () {
+		String salida = "";
+		salida += this.getId() + ":\n";
+		salida += "Numero de nodos: " + this.getNodos().size();
+		salida += "\nAristas:\n";
+		for(int i = 0; i < this.getAristas().size(); i++)
+		{
+			salida += this.getAristas().get(i) + "\n"; 
+		}
+		return salida;
 	}
 
 	/**

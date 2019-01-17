@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,18 +11,27 @@ import java.util.Scanner;
 
 public class CircuitoHam {
 	
-	ArrayList<Gadget> gadgets;
+	ArrayList<Gadget> gadgets; // Gadgets del grafo
 	ArrayList<String> idNodos; // Array que almacena los id de los nodos
 	Grafo completo; // Grafo completo
-	int numNodos; // Numero de nodos del grafo completo
+	int numNodos; // Numero de nodos del grafo completo, incluidos los de los gadgets
 	
+	/**
+	 * Constructor por defecto
+	 */
 	public CircuitoHam () {
 		this.gadgets = new ArrayList<Gadget>();
 		this.idNodos = new ArrayList<String>();
-		this.completo = new Grafo();
+		this.completo = new Grafo("HC");
 		this.numNodos = 0;
 	}
 
+	/**
+	 * Metodo que genera el grafo completo sobre el que calcular el Camino Hamiltoniano
+	 * Primero carga el vertex cover, luego agrega los selectores (1 por cada nodo del VC)
+	 * y por ultimo genera y conecta los gadgets tanto entre si como con el resto de
+	 * nodos libres.
+	 */
 	public void cargarCircuito() {
 		String nombreFichero;
 		VC vertex = new VC();
@@ -33,10 +43,15 @@ public class CircuitoHam {
 		sc.close();
 		
 		// Cargar VC
-		vertex.cargarVC(nombreFichero);
+		try {
+			vertex.cargarVC(nombreFichero);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
+		// Agregar los gadgets, uno por cada arista
 		for (int i = 0; i < vertex.getAristas().size(); i++) {
-			String idGadget = "GD";
+			String idGadget = "GD_";
 			if (vertex.enCubrimiento(vertex.getAristas().get(i).getNodoA()))
 				idGadget += vertex.getAristas().get(i).getNodoA().getId() + "-" + vertex.getAristas().get(i).getNodoB().getId();
 			else
@@ -47,9 +62,9 @@ public class CircuitoHam {
 		
 		for (int i = 0; i < vertex.getCubrimiento().size(); i++)
 		{
-			// Incluir un nodo nuevo por cada uno en el cubrimiento
+			// Incluir un nodo nuevo por cada uno en el cubrimiento (selectores)
 			Nodo nuevo = new Nodo();
-			String idNuevo = "nodoHC" + (i + 1);
+			String idNuevo = "nodoHC_" + (i+1);
 			nuevo.setId(idNuevo);
 			this.completo.addNodo(nuevo);
 			
@@ -60,30 +75,23 @@ public class CircuitoHam {
 			for (int j = 0; j < this.getGadgets().size(); j++)
 			{
 				if (this.getGadgets().get(j).getId().contains(vertex.getCubrimiento().get(i).getId()))
-				{
+				{					
 					if (indiceGadget1 == -1)
 						indiceGadget1 = j;
-					else
-						if (indiceGadget2 == -1)
-							indiceGadget2 = j;
+					else if (indiceGadget2 == -1)
+						indiceGadget2 = j;
 					if ((indiceGadget2 != -1) && (indiceGadget1 != -1))
 					{
-						// Unir los gadgets correspondientes
-						this.conectarGadgets(this.getGadgets().get(indiceGadget1), this.getGadgets().get(indiceGadget2));
+						// Unir los gadgets correspondientes entre si
+						Gadget gadget1 = this.getGadgets().get(indiceGadget1);
+						Gadget gadget2 = this.getGadgets().get(indiceGadget2);
 						
-						Arista aux = new Arista();
-						int ultimoOcupados;
-						if (this.getGadgets().get(indiceGadget1).getExtOcupados().size() > 0)
-							ultimoOcupados = this.getGadgets().get(indiceGadget1).getExtOcupados().size() - 1;
-						else
-							ultimoOcupados = 0;							
-						aux.setNodoA(this.getGadgets().get(indiceGadget1).getNodos().get(ultimoOcupados));
+						int extConexion1 = gadget1.conectGadgets();
+						int extConexion2 = gadget2.conectGadgets();
 						
-						if (this.getGadgets().get(indiceGadget2).getExtOcupados().size() > 0)
-							ultimoOcupados = this.getGadgets().get(indiceGadget2).getExtOcupados().size() - 1;
-						else
-							ultimoOcupados = 0;
-						aux.setNodoB(this.getGadgets().get(indiceGadget2).getNodos().get(ultimoOcupados));	
+						Arista aux = new Arista();			
+						aux.setNodoA(this.getGadgets().get(indiceGadget1).getNodos().get(extConexion1));
+						aux.setNodoB(this.getGadgets().get(indiceGadget2).getNodos().get(extConexion2));	
 						
 						this.completo.addArista(aux);
 						
@@ -94,19 +102,21 @@ public class CircuitoHam {
 					}
 				}
 			}
-		}		
-		// Conectar los nodos libres de los gadgets y los nuevos
+		}
+		// Conectar los nodos libres y los selectores
 	    this.conGadgetsNodo(this.completo);
 	}
 
+	/**
+	 * Metodo con el algoritmo correspondiente para encontrar el camino hamiltoniano
+	 */
 	public void resolverCircuito() {		
-		// Obtener todas las id de los nodos
-	    this.generarIdNodos(); 
-	    
-	    // Crear la matriz de adyacencia
+		// Obtener todas las id de los nodos y el numero de nodos del camino final
+	    this.generarIdNodos();
 	    this.setNumNodos(this.getIdNodos().size());
 	    System.out.println("Numero de nodos en el grafo " + this.getNumNodos());
 	    
+	    // Crear la matriz de adyacencia, un array de visitados y otro para guardar el camino recorrido	    
 	    boolean [][] matAdy = new boolean [this.getNumNodos()][];
 	    boolean [] visitado = new boolean [this.getNumNodos()];
 	    int [] camino = new int [this.getNumNodos()];
@@ -116,11 +126,11 @@ public class CircuitoHam {
 	        matAdy[i] = new boolean[getNumNodos()];
 	        camino[i] = -1;
 	        visitado[i] = false;
-	    }
+	    }	    
 	    
+	    // Obtener las aristas asociadas a cada nodo
 	    for (int i = 0; i < this.getNumNodos(); i++)
 	    {
-	    	// Obtener las aristas asociadas a cada nodo
 	    	ArrayList<Arista> aux = new ArrayList<Arista>();
 	    	aux = this.getAristasNodo(this.getIdNodos().get(i));
 	    	for (int j = 0; j < this.getNumNodos(); j++)
@@ -144,25 +154,25 @@ public class CircuitoHam {
 	    	System.out.println("Existe solucion:");
 	    	for (int i = 0; i < this.getNumNodos(); i++)
 	    		System.out.print(" " + camino[i]);
-	    	// Añadir el primer nodo que es a su vez el último
+	    	// Agregar el primer nodo que es a su vez el ultimo
 	    	System.out.println(" " + camino[0]);
 	    }
 	}
 
 	/**
 	 * Metodo recursivo para el calculo del circuito hamiltoniano
-	 * @param matAdy
-	 * @param visitado
-	 * @param camino
-	 * @param i
-	 * @return
+	 * @param matAdy Matriz de adyacencia
+	 * @param visitado Array de visitados
+	 * @param camino Camino recorrido
+	 * @param pos Posicion
+	 * @return true en caso de que exista una solucion
 	 */
 	private boolean calcularCircuito(boolean[][] matAdy, boolean[] visitado, int[] camino, int pos) {
 		// Condicion de parada: todos los nodos incluidos en V
 		if (pos == this.getNumNodos())
 		{
 			// Y si el ultimo vertice incluido es igual al primero
-			if (matAdy[camino[pos - 1]][camino[0]] == true)
+			if (matAdy[camino[pos-1]][camino[0]] == true)
 				return true;
 			else
 				return false;
@@ -172,12 +182,12 @@ public class CircuitoHam {
 		for (int i = 1; i < this.getNumNodos(); i++)
 		{
 			// Comprobar si se puede agregar el nodo al circuito
-			if (this.esAgregable(camino[pos - 1], i, matAdy, visitado))
+			if (this.esAgregable(camino[pos-1], i, matAdy, visitado))
 			{
 				visitado[i] = true;
 				camino[pos] = i;
 				// Llamada recursiva para construir el resto del circuito
-				if (this.calcularCircuito(matAdy, visitado, camino, pos + 1))
+				if (this.calcularCircuito(matAdy, visitado, camino, pos+1))
 					return true;
 				// Si el nodo que se agrego no lleva a una solucion se elimina
 				visitado[i] = false;
@@ -188,61 +198,54 @@ public class CircuitoHam {
 	    return false;
 	}
 
+	/**
+	 * Metodo para comprobar si un nodo se puede agregar al camino segun su adyacencia
+	 * @param ultimoNodo Ultimo nodo
+	 * @param nodoActual Nodo actual
+	 * @param matAdy Matriz de adyacencia
+	 * @param visitado Array de visitados
+	 * @return true en caso de que se pueda agregar
+	 */
 	private boolean esAgregable(int ultimoNodo, int nodoActual, boolean[][] matAdy, boolean[] visitado) {
-		if(visitado[nodoActual] || matAdy[ultimoNodo][nodoActual] == false)
-	        return false;
+		if (visitado[nodoActual])
+			return false;
+		if (matAdy[ultimoNodo][nodoActual] == false)
+			return false;
 	    return true;
 	}
 
+	/**
+	 * Metodo para agregar un gadget
+	 * @param valor Gadget
+	 */
 	private void addGadget(Gadget valor) {
 		this.gadgets.add(valor);		
 	}
-	
-    private void conectarGadgets(Gadget gadget1, Gadget gadget2) {
-    	int indice1 = gadget1.getExtLibres().get(0);
-    	int indice2 = gadget2.getExtLibres().get(0);
-    	
-    	// Obtener y eliminar el elemento libre
-    	ArrayList<Integer> aux = new ArrayList<Integer>();    	
-    	aux = gadget1.getExtLibres();
-    	aux.remove(aux.get(0));
-    	gadget1.setExtLibres(aux);
-    	aux.clear();
-    	aux = gadget2.getExtLibres();
-    	aux.remove(aux.get(0));
-    	gadget2.setExtLibres(aux);
-    	
-    	// Insertar el elemento que ahora esta ocupado
-    	aux.clear();
-    	aux = gadget1.getExtOcupados();
-    	aux.add(indice1);
-    	gadget1.setExtOcupados(aux);        
-        aux.clear();
-        aux = gadget2.getExtOcupados();
-        aux.add(indice2);
-        gadget2.setExtOcupados(aux);
-    }
     
+	/**
+	 * Metodo para conectar los nodos libres y los extremos libres de los gadgets
+	 * @param grafo Grafo completo
+	 */
     private void conGadgetsNodo(Grafo grafo) {
-    	Arista nodoGadget = new Arista();
-        for(int i = 0;  i < this.getGadgets().size(); i++)
-        {
-            if(this.getGadgets().get(i).getExtLibres().size() > 0)
-            {
-                while(this.getGadgets().get(i).getExtLibres().size() > 0)
-                {
-                    Nodo b = this.getGadgets().get(i).getNodos().get(this.getGadgets().get(i).conectGadgets());
-                    nodoGadget.setNodoB(b);
-                    for(int j = 0;  j < grafo.getNodos().size(); j++)
-                    {
-                        nodoGadget.setNodoA(grafo.getNodos().get(j));
-                        grafo.addArista(nodoGadget);
-                    }
-                }
-            }
-        }		
+    	Gadget gadget;
+        for (int j = 0; j < this.getGadgets().size(); j++) {
+        	gadget = this.getGadgets().get(j);
+        	if (gadget.getExtLibres().size() > 0)
+        		while (gadget.getExtLibres().size() > 0) {
+        			Nodo b = gadget.getNodos().get(gadget.conectGadgets());
+        			for (int i = 0; i < grafo.getNodos().size(); i++) {
+        				Arista aristaNodoGadget = new Arista();
+        				aristaNodoGadget.setNodoA(grafo.getNodos().get(i));
+        				aristaNodoGadget.setNodoB(b);
+        				grafo.addArista(aristaNodoGadget);
+        			}
+        		}
+        }
 	}
     
+    /**
+     * Metodo para generar las id de los nodos del grafo completo
+     */
     private void generarIdNodos() {
     	for(int i = 0;  i < this.getCompleto().getNodos().size(); i++){
             this.getIdNodos().add(this.getCompleto().getNodos().get(i).getId());
@@ -262,8 +265,8 @@ public class CircuitoHam {
     private ArrayList<Arista> getAristasNodo(String idNodo) {
     	ArrayList<Arista> todas = new ArrayList<Arista>(); // Todas las aristas, incluidas las de los gadgets
     	ArrayList<Arista> aux = new ArrayList<Arista>(); // Aristas que si contienen este nodo
-    	todas = this.getCompleto().getAristas(); // Añadir primero las aristas del grafo completo
-    	// Añadir luego las de los gadgets
+    	todas = this.getCompleto().getAristas(); // Aï¿½adir primero las aristas del grafo completo
+    	// Aï¿½adir luego las de los gadgets
     	for (int i = 0; i < this.getGadgets().size(); i++)
     	{
     		for (int j = 0; j < this.getGadgets().get(i).getAristas().size(); j++)
@@ -271,7 +274,7 @@ public class CircuitoHam {
     			todas.add(this.getGadgets().get(i).getAristas().get(j));
     		}
     	}
-    	// Buscar y añadir las que si estan
+    	// Buscar y aï¿½adir las que si estan
     	for (int i = 0; i < todas.size(); i++)
     		if (todas.get(i).contieneNodo(idNodo))
     			aux.add(todas.get(i));
