@@ -82,7 +82,7 @@ public class VC extends Grafo {
 		for (int i = 0; i < numNodos; i++)
 		{
 			Nodo aux = new Nodo();
-			String idNodo = "vc_" + (i+1);
+			String idNodo = "vc" + (i+1);
 			aux.setId(idNodo);
 			this.addNodo(aux);
 		}

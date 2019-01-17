@@ -114,7 +114,8 @@ public class CircuitoHam {
 		// Obtener todas las id de los nodos y el numero de nodos del camino final
 	    this.generarIdNodos();
 	    this.setNumNodos(this.getIdNodos().size());
-	    System.out.println("Numero de nodos en el grafo " + this.getNumNodos());
+	    System.out.println(this.getCompleto().getId() + ":");
+	    System.out.println("Numero de nodos en el camino: " + this.getNumNodos());
 	    
 	    // Crear la matriz de adyacencia, un array de visitados y otro para guardar el camino recorrido	    
 	    boolean [][] matAdy = new boolean [this.getNumNodos()][];
@@ -153,9 +154,9 @@ public class CircuitoHam {
 	    {
 	    	System.out.println("Existe solucion:");
 	    	for (int i = 0; i < this.getNumNodos(); i++)
-	    		System.out.print(" " + camino[i]);
+	    		System.out.println(" " + this.getIdNodos().get(camino[i]));
 	    	// Agregar el primer nodo que es a su vez el ultimo
-	    	System.out.println(" " + camino[0]);
+	    	System.out.println(" " + this.getIdNodos().get(camino[0]));
 	    }
 	}
 
@@ -265,8 +266,8 @@ public class CircuitoHam {
     private ArrayList<Arista> getAristasNodo(String idNodo) {
     	ArrayList<Arista> todas = new ArrayList<Arista>(); // Todas las aristas, incluidas las de los gadgets
     	ArrayList<Arista> aux = new ArrayList<Arista>(); // Aristas que si contienen este nodo
-    	todas = this.getCompleto().getAristas(); // A�adir primero las aristas del grafo completo
-    	// A�adir luego las de los gadgets
+    	todas = this.getCompleto().getAristas(); // Agregar primero las aristas del grafo completo
+    	// Agregar luego las de los gadgets
     	for (int i = 0; i < this.getGadgets().size(); i++)
     	{
     		for (int j = 0; j < this.getGadgets().get(i).getAristas().size(); j++)
@@ -274,7 +275,7 @@ public class CircuitoHam {
     			todas.add(this.getGadgets().get(i).getAristas().get(j));
     		}
     	}
-    	// Buscar y a�adir las que si estan
+    	// Buscar y agregar las que si estan
     	for (int i = 0; i < todas.size(); i++)
     		if (todas.get(i).contieneNodo(idNodo))
     			aux.add(todas.get(i));
